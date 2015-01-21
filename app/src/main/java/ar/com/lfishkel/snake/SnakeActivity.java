@@ -1,28 +1,28 @@
 package ar.com.lfishkel.snake;
 
-import ar.com.lfishkel.snake.util.SystemUiHider;
-
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Gallery;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SnakeActivity extends Activity {
 
+    private static final long DELAY = 80;
+
+    private Snake snake;
     private MySensorListener mySensorListener;
     private SensorManager mSensorManager;
-    boolean canTurn = true;
+    private boolean canTurn = true;
+    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +31,9 @@ public class SnakeActivity extends Activity {
         mySensorListener = new MySensorListener(this);
         mSensorManager = (SensorManager) getSystemService(this.getApplicationContext().SENSOR_SERVICE);
         mSensorManager.registerListener(mySensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        timer = new Timer();
+        timer.schedule(new MovingTask(this), DELAY);
+        snake = new Snake((ImageView)findViewById(R.id.imageView));
     }
 
     @Override
@@ -38,47 +41,31 @@ public class SnakeActivity extends Activity {
         super.onPostCreate(savedInstanceState);
 
     }
+
     private final class MySensorListener implements SensorEventListener {
 
-       private Activity activity;
+       private SnakeActivity activity;
 
-       public MySensorListener(Activity ac) {
-           this.activity = ac;
+       public MySensorListener(SnakeActivity activity) {
+           this.activity = activity;
        }
 
         @Override
         public void onSensorChanged(SensorEvent event) {
-      /*  if (event.values[Sensor.TYPE_ACCELEROMETER] > 3) {
-            //se mueve a la derecha
-        } else if (event.values[Sensor.TYPE_ACCELEROMETER] < -3) {
-            //se mueve a la derecha
-        }*/
-
-
-            View y = activity.findViewById(R.id.y);
             if (event.values[1] > 3) {
-                ((TextView) y).setText("DERECHA");
                 if (canTurn) {
-                    //dobla a la derecha
+                    activity.getSnake().turnRight();
                     canTurn = false;
                 }
-
             } else if (event.values[1] < -3) {
-                ((TextView) y).setText("IZQUIERDA");
                 if (canTurn) {
-                    //dobbla a la izq
+                    activity.getSnake().turnLeft();
                     canTurn = false;
                 }
             } else {
-                ((TextView) y).setText("MEDIO");
                 canTurn = true;
             }
-
-
-
         }
-
-
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -87,14 +74,22 @@ public class SnakeActivity extends Activity {
 
     }
 
-/*
-    View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
+    private final class MovingTask extends TimerTask {
 
+        private SnakeActivity activity;
+
+        public MovingTask(SnakeActivity activity) {
+            this.activity = activity;
         }
-    };
 
-    */
+        @Override
+        public void run() {
+            activity.getSnake().move();
+        }
+    }
+
+    public Snake getSnake() {
+        return snake;
+    }
 
 }
