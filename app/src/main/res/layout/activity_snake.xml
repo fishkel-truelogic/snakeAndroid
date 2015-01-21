@@ -4,22 +4,20 @@
     tools:context=".SnakeActivity"
     android:id="@+id/activity_snake">
 
-        <LinearLayout android:id="@+id/fullscreen_content_controls" style="?metaButtonBarStyle"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent">
+    <ar.com.lfishkel.snake.Head
+        android:id="@+id/head"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"/>
 
+    <ar.com.lfishkel.snake.Tail
+        android:id="@+id/tail"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"/>
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageView"
-                android:src="@drawable/snake_pixel"
-                android:layout_gravity="center" />
-
-        </LinearLayout>
-
-
+    <ImageView
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:id="@+id/apple"
+        android:background="@drawable/apple"/>
 
 </FrameLayout>
