@@ -18,6 +18,7 @@ public class Tail extends ImageView {
     private static final int LEFT  = 1;
     private static final int UP    = 2;
     private static final int DOWN  = 3;
+    private static final int FRAME_RATE = 50;
 
     private Context mContext;
 
@@ -28,7 +29,6 @@ public class Tail extends ImageView {
     private int direction;
 
     private Handler h;
-    private final int FRAME_RATE = 30;
 
 
     public Tail(Context context, AttributeSet attrs) {
@@ -55,7 +55,7 @@ public class Tail extends ImageView {
 
 
     protected void onDraw(Canvas c) {
-        BitmapDrawable ball = (BitmapDrawable) mContext.getResources().getDrawable(R.drawable.snake_pixel);
+        BitmapDrawable ball = (BitmapDrawable) mContext.getResources().getDrawable(R.drawable.snake_skin);
         moveNext(xOld, yOld);
 
         c.drawBitmap(ball.getBitmap(), x, y, null);

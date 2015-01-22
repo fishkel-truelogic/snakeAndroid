@@ -7,7 +7,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.util.DisplayMetrics;
 import android.view.ViewGroup;
+import android.widget.Chronometer;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -17,8 +20,6 @@ import java.util.Random;
 
 public class SnakeActivity extends Activity {
 
-    private static final long DELAY = 80;
-
     private Head head;
     private List<Tail> body;
     private MySensorListener mySensorListener;
@@ -26,18 +27,52 @@ public class SnakeActivity extends Activity {
     private boolean canTurn = true;
     private FrameLayout fl;
     private ImageView apple;
+    private int height;
+    private int width;
+
+    private int points;
+   // private Chronometer chrono;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(getWindow().FEATURE_NO_TITLE);
         setContentView(R.layout.activity_snake);
         mySensorListener = new MySensorListener(this);
         mSensorManager = (SensorManager) getSystemService(this.getApplicationContext().SENSOR_SERVICE);
         mSensorManager.registerListener(mySensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         fl = (FrameLayout) findViewById(R.id.activity_snake);
+       // chrono=(Chronometer)findViewById(R.id.chrono);
 
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        height = displaymetrics.heightPixels;
+        width = displaymetrics.widthPixels;
         initSnake();
         initApple();
+/*
+        chrono.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            public void onChronometerTick(Chronometer c) {
+            if(!resume) {
+                long minutes =((SystemClock.elapsedRealtime() - chrono.getBase()) / 1000) / 60;
+                long seconds =((SystemClock.elapsedRealtime() - chrono.getBase()) / 1000) % 60;
+                currentTime = minutes + ":" + seconds;
+                arg0.setText(currentTime);
+                elapsedTime = SystemClock.elapsedRealtime();
+            } else {
+                long minutes = ((elapsedTime - chrono.getBase()) / 1000) / 60;
+                long seconds = ((elapsedTime - chrono.getBase()) / 1000) % 60;
+                currentTime = minutes + ":" + seconds;
+                c.setText(currentTime);
+                elapsedTime = elapsedTime + 1000;
+            }
+
+
+        }
+        }
+        );
+*/
 
     }
 
@@ -84,13 +119,20 @@ public class SnakeActivity extends Activity {
     }
 
     public void randomApple() {
-        apple.setX(getRandom(0, 200));
-        apple.setY(getRandom(0, 200));
+        apple.setX(getRandom(50, width -50));
+        apple.setY(getRandom(50, height - 50));
         head.setAppleX(apple.getX());
         head.setAppleY(apple.getY());
     }
 
     private final class MySensorListener implements SensorEventListener {
+
+
+
+        private static final int TURN_RIGHT = 4;
+        private static final int TURN_LEFT = 5;
+        private static final int TURN_CENTER_UP = 6;
+        private static final int TURN_CENTER_DOWN = 6;
 
        private SnakeActivity activity;
 
@@ -110,10 +152,18 @@ public class SnakeActivity extends Activity {
                     activity.getHead().turnLeft();
                     canTurn = false;
                 }
-            } else {
-                canTurn = true;
+            } else if (event.values[1] > -3 && event.values[1] < 3) {
+                if (!canTurn) {
+                    if (event.values[0] > 0) {
+                        activity.getHead().turnUp();
+                    } else {
+                        activity.getHead().turnDown();
+                    }
+                    canTurn = true;
+                }
             }
         }
+
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {

@@ -16,17 +16,17 @@ public class Head extends ImageView {
     private static final int LEFT  = 1;
     private static final int UP    = 2;
     private static final int DOWN  = 3;
+    private static final int SIZE = 10 ;
+    private static final int FRAME_RATE = 50;
 
 
-    private int direction;
+    private int direction = UP;
 
 
-    //ssads
     private Context mContext;
     int x = -1;
     int y = -1;
     private Handler h;
-    private final int FRAME_RATE = 30;
     private Tail next;
     private SnakeActivity activity;
     private float appleX;
@@ -40,54 +40,19 @@ public class Head extends ImageView {
     }
 
     public void turnRight() {
-        switch (direction) {
-            case RIGHT:
-                direction = DOWN;
-                break;
-            case LEFT:
-                direction = UP;
-                break;
-            case UP:
-                direction = RIGHT;
-                break;
-            case DOWN:
-                direction = LEFT;
-                break;
-        }
-
+        direction = LEFT;
     }
 
     public void turnLeft() {
-        switch (direction) {
-            case RIGHT:
-                direction = UP;
-                break;
-            case LEFT:
-                direction = DOWN;
-                break;
-            case UP:
-                direction = LEFT;
-                break;
-            case DOWN:
-                direction = RIGHT;
-                break;
-        }
+        direction = RIGHT;
     }
 
-    public void move() {
-        switch (direction) {
-            case RIGHT:
-                break;
-            case LEFT:
-                break;
-            case UP:
-                break;
-            case DOWN:
-                break;
-        }
+    public void turnUp() {
+        direction = UP;
     }
-
-
+    public void turnDown() {
+        direction = DOWN;
+    }
 
     private Runnable r = new Runnable() {
         @Override
@@ -98,20 +63,20 @@ public class Head extends ImageView {
 
 
     protected void onDraw(Canvas c) {
-        BitmapDrawable ball = (BitmapDrawable) mContext.getResources().getDrawable(R.drawable.snake_pixel);
+        BitmapDrawable ball = (BitmapDrawable) mContext.getResources().getDrawable(R.drawable.snake_skin);
         moveNext(x, y);
         switch (direction) {
             case RIGHT:
-                x += 4;
+                x += SIZE;
                 break;
             case LEFT:
-                x -= 4;
+                x -= SIZE;
                 break;
             case UP:
-                y -= 4;
+                y -= SIZE;
                 break;
             case DOWN:
-                y += 4;
+                y += SIZE;
                 break;
         }
         if ((x > this.getWidth() - ball.getBitmap().getWidth())) {
@@ -125,7 +90,7 @@ public class Head extends ImageView {
         } else if (y < 0) {
             y = this.getHeight() - ball.getBitmap().getHeight();
         }
-        if (appleX <= x + 4 && appleX >= x - 4 && appleY <= y + 4 && appleY >= y - 4) {
+        if (appleX <= x + 20 && appleX >= x - 40 && appleY <= y + 30 && appleY >= y - 30) {
             activity.addTail();
             activity.randomApple();
         }
@@ -136,8 +101,10 @@ public class Head extends ImageView {
     }
 
     private void moveNext(int xOld, int yOld) {
-        next.setXX(xOld);
-        next.setYY(yOld);
+        if (next != null) {
+            next.setXX(xOld);
+            next.setYY(yOld);
+        }
     }
 
     public int getXX() {
@@ -183,4 +150,6 @@ public class Head extends ImageView {
     public SnakeActivity getActivity() {
         return activity;
     }
+
+
 }
