@@ -7,12 +7,13 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.SystemClock;
+import android.os.CountDownTimer;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Chronometer;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +28,13 @@ public class SnakeActivity extends Activity {
     private boolean canTurn = true;
     private FrameLayout fl;
     private ImageView apple;
+    private ImageView star;
     private int height;
     private int width;
 
     private int points;
-   // private Chronometer chrono;
-
+    private TextView tv;
+    MyCount counter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,41 +45,21 @@ public class SnakeActivity extends Activity {
         mSensorManager = (SensorManager) getSystemService(this.getApplicationContext().SENSOR_SERVICE);
         mSensorManager.registerListener(mySensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         fl = (FrameLayout) findViewById(R.id.activity_snake);
-       // chrono=(Chronometer)findViewById(R.id.chrono);
-
+        tv = (TextView) findViewById(R.id.chrono);
+        counter = new MyCount(50000,1000);
+        counter.start();
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         height = displaymetrics.heightPixels;
         width = displaymetrics.widthPixels;
         initSnake();
         initApple();
-/*
-        chrono.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
-            public void onChronometerTick(Chronometer c) {
-            if(!resume) {
-                long minutes =((SystemClock.elapsedRealtime() - chrono.getBase()) / 1000) / 60;
-                long seconds =((SystemClock.elapsedRealtime() - chrono.getBase()) / 1000) % 60;
-                currentTime = minutes + ":" + seconds;
-                arg0.setText(currentTime);
-                elapsedTime = SystemClock.elapsedRealtime();
-            } else {
-                long minutes = ((elapsedTime - chrono.getBase()) / 1000) / 60;
-                long seconds = ((elapsedTime - chrono.getBase()) / 1000) % 60;
-                currentTime = minutes + ":" + seconds;
-                c.setText(currentTime);
-                elapsedTime = elapsedTime + 1000;
-            }
-
-
-        }
-        }
-        );
-*/
 
     }
 
     private void initApple() {
         apple = (ImageView) findViewById(R.id.apple);
+        star = (ImageView) findViewById(R.id.star);
         randomApple();
 
     }
@@ -119,10 +101,20 @@ public class SnakeActivity extends Activity {
     }
 
     public void randomApple() {
+        star.setVisibility(View.VISIBLE);
+        star.setX(apple.getX());
+        star.setY(apple.getY());
         apple.setX(getRandom(50, width -50));
         apple.setY(getRandom(50, height - 50));
         head.setAppleX(apple.getX());
         head.setAppleY(apple.getY());
+    }
+
+    public void addTime() {
+        counter.cancel();
+        int timeLeft = Integer.parseInt(tv.getText().toString().split(": ")[1]);
+        counter = new MyCount(timeLeft * 1000 + 10000, 1000);
+        counter.start();
     }
 
     private final class MySensorListener implements SensorEventListener {
@@ -170,6 +162,20 @@ public class SnakeActivity extends Activity {
 
         }
 
+    }
+
+    public class MyCount extends CountDownTimer {
+        public MyCount(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+        @Override
+        public void onFinish() {
+            tv.setText("done!");
+        }
+        @Override
+        public void onTick(long millisUntilFinished) {
+            tv.setText("Left: " + millisUntilFinished / 1000);
+        }
     }
 
     public Head getHead() {

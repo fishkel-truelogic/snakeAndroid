@@ -4,11 +4,11 @@
     tools:context=".SnakeActivity"
     android:id="@+id/activity_snake">
 
-    <!--<Chronometer
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/chrono"/>
-    -->
+
 
     <ar.com.lfishkel.snake.Head
         android:id="@+id/head"
@@ -25,5 +25,12 @@
         android:layout_height="30dp"
         android:id="@+id/apple"
         android:background="@drawable/apple"/>
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/star"
+        android:visibility="invisible"
+        android:background="@drawable/star"/>
 
 </FrameLayout>

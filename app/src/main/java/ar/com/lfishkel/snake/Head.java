@@ -93,6 +93,7 @@ public class Head extends ImageView {
         if (appleX <= x + 20 && appleX >= x - 40 && appleY <= y + 30 && appleY >= y - 30) {
             activity.addTail();
             activity.randomApple();
+            activity.addTime();
         }
 
         c.drawBitmap(ball.getBitmap(), x, y, null);
